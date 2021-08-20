@@ -8,5 +8,5 @@ Python 3.7
 ``` virtualenv venv```  
 Активируйте:
 ``` source venv/bin/activate ``` или ``` venv/Scripts/activate ```  
-Установите зависимости: ``` pip install -r requirements```  
+Установите зависимости: ``` pip install -r requirements.txt```  
 Запустите проект ``` python app.py ```
