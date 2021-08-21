@@ -182,10 +182,10 @@ def page_1_dropdown(value, article):
     State('article-title', 'data'),
 )
 def save_to_db(click, cluster, title):
-    print(click, cluster, title)
+    # print(click, cluster, title)
     if click:
         db.insert_one({'title': title, 'news': cluster})
-        print(click, cluster, title)
+        # print(click, cluster, title)
         return "Сохранено!"
     else:
         return None
