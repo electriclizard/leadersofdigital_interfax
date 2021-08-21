@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  db:
+    image: mongo:latest
+    container_name: mongo_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - "./db/data:/data/db"
+    ports:
+      - "27017:27017"
+#    command:
+#      - None
+
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    container_name: merch_rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "aQAB2pCKVXV3xPL5"
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_NODENAME: "merch@rabbitmq"
+    volumes:
+      - "./rabbitmq/log:/var/log/rabbitmq"
+      - "./rabbitmq/data:/var/lib/rabbitmq"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  generator_service:
+    build: .
+    container_name: header_generator
+    image: Some_image
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: root
+      DB_PASSWORD: example
+      DB_NAME: mongo_db
+    ports:
+      - "41001:41001"
+    depends_on:
+      - db
