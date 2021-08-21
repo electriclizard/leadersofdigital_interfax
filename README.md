@@ -27,11 +27,11 @@ Python >= 3.6
 
 Для запуска без Docker
 
-создайте virtualenv
+- активируйте virtualenv
 
-активируйте virtualenv
+- установите все зависимости `pip install -r requirements.txt`
 
-```python app.py```
+- запустите сервис ```python app.py```
 
 ## Вы можете попробовать нашу модель в Colab!
 
