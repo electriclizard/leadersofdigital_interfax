@@ -1,2 +1,3 @@
-gdown --id 1YdViRMGt40K_pvvBAmFGGYtHl6imW3ZU -O model_files/
-unzip model_files/model_100.zip
+gdown --id 16iOzmpngF-t7b_wzeU3bxcQ8mB1QpWzD -O model_files/
+cd model_files/
+unzip models.zip

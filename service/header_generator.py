@@ -28,7 +28,7 @@ class InterfaxHeaderCreator(HeaderCreator):
         """
         news_list = self._parse_input(input_data)
         created_headers = self.header_model.inference_model(news_list)
-        created_header = created_headers[0]
+        created_header = created_headers[:3]
         header = self._serialize_output(created_header)
         return header
 

@@ -43,6 +43,7 @@ navbar = dbc.NavbarSimple(
 
 def make_news(news, num):
     if 'published_at' in news:
+
         date = datetime.strptime(news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
     return dbc.Card(
         [
@@ -53,6 +54,7 @@ def make_news(news, num):
     ]
                 ),
         ], style={'border': '0px'}
+
     )
     pass
 
@@ -127,8 +129,10 @@ adminPanel = html.Div([
         html.Div(id='output-data-upload'),
         dcc.Dropdown(
             id='page-1-dropdown',
-            options=[{'label': i, 'value': i} for i in [
-                'bert_header', 'ngram_header', 'dummy_header', ]],
+            # options=[{'label': i, 'value': i} for i in [
+            #     'bert_header', 'ngram_header', 'dummy_header', ]],
+            options=[{'label': 'Нейросетевой генератор bert', 'value': 'bert_header'}, {
+                'label': 'Статистический генератор', 'value': 'ngram_header'}],
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
@@ -141,6 +145,12 @@ adminPanel = html.Div([
 
 ])
 
+def validateJSON(jsondata):
+    if 'title' in jsondata[0]:
+        return 'multiple'
+    if 'body' in jsondata[0]:
+        return 'single'
+    return None
 
 @app.callback(
     Output('output-data-upload', 'children'),
@@ -157,8 +167,17 @@ def upload_file(content, filename):
             text = decoded.decode('utf-8')
             article = json.loads(text)
 
-            # return [news['body']+'\n' for news in article]
-            return [make_news(article[i], i) for i in range(len(article))], article
+            JSONtype = validateJSON(article)
+            print(JSONtype)
+
+            if JSONtype == None:
+                return ['Формат JSON не соответствует требуемому. Если хотите загрузить одну тему, обязательно наличие "body" в элементах списка. Если необходимо обработать несколько тем, необходимо наличие "title" в элементах'], None
+
+            if JSONtype =='single':
+                return [make_news(article[i], i) for i in range(len(article))], article
+            
+            if JSONtype =='multiple':
+                return [ html.H3('Вы загрузили '+str(len(article))+' тем, обработка займет больше времени')]+[make_cluster(article[i], i) for i in range(len(article))], article
         else:
             return "Загрузите файл формата json", None
     else:
@@ -173,26 +192,42 @@ def dropdown(value, article):
     if not article:
         return "Сначала загрузите данные", None
 
+    JSONType = validateJSON(article)
+
+
+
     if value:
-        header_generator_service = get_service(value)
-        title = header_generator_service.create_cluster_header(
-            article
-        ).header
-        return ['Выбранная модель: "{}"'.format(value),
-                html.H2(title),
+
+        if JSONType == 'single':
+            header_generator_service = get_service(value)
+            title = header_generator_service.create_cluster_header(
+                article
+            ).header
+            
+            return ['Выбранная модель: "{}"'.format(value)]+[
+                html.H2(i) for i in title]+[
                 dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)
-                ], title
+                        id='save-button', n_clicks=0)], title
+        if JSONType == 'multiple':
+            title = []
+            for i in range(len(article)):
+                finaldict={}
+                news = article[i]['news']
+                header_generator_service = get_service(value)
+                result = header_generator_service.create_cluster_header(
+                    news
+                ).header
+                finaldict[article[i]['title']]= result
+                title.append(finaldict)
+            
+
+            return['Выбранная модель: "{}"'.format(value), html.Br()]+[
+                str(objTitle) for objTitle in title
+            ]+[
+                dbc.Button('сохранить результат в базу',
+                        id='save-button', n_clicks=0)], title
     else:
-        header_generator_service = get_service('random_header')
-        title = header_generator_service.create_cluster_header(
-            article
-        ).header
-        return ['модель не выбрана',
-                html.H2(title),
-                dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)
-                ], title
+        return ['модель не выбрана'], None
 
 
 @app.callback(
@@ -202,11 +237,18 @@ def dropdown(value, article):
     State('article-title', 'data'),
 )
 def save_to_db(click, cluster, title):
-    # print(click, cluster, title)
-    if click:
+    if click & len(title) == 1:
         db.insert_one({'generated_title': title, 'news': cluster})
-        # print(click, cluster, title)
         return "Сохранено!"
+
+    if click & len(title) > 1:
+        result = []
+        for k in range(len(cluster)):
+            news = cluster[k]
+            news['generated_title'] = title[k][news['title']][0]
+            result.append(news)
+        db.insert_many(result)
+        return "Сохранено все!"
     else:
         return None
 
@@ -219,6 +261,7 @@ def display_page(pathname):
     else:
         return index_page
     # You could also return a 404 "URL not found" page here
+
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0')

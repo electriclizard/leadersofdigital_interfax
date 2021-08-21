@@ -31,7 +31,7 @@ class NgrammModel(BaseModel):
             for ngram in range(ngram_range[0], ngram_range[-1]+1):
                 for i in range(len(tokens)-ngram):
                     counter[' '.join(tokens[i:i+ngram])] += 1
-        return counter.most_common()[:20]
+        return [i[0] for i in counter.most_common()[:20]]
 
 
 class TfidfModel(BaseModel):
