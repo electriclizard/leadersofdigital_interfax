@@ -12,11 +12,11 @@ from datetime import datetime
 import base64
 
 from infrastructure.db._base import DB
-# from handlers.get import get_service
+from handlers.get import get_service
 
 
-def get_service():
-    return 'ПУТИН'
+# def get_service():
+#     return 'ПУТИН'
 
 print("Ipmports complete")
 
