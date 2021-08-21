@@ -4,7 +4,6 @@
 from typing import Container
 import dash
 from dash.dependencies import Output, State, Input
-from dash_bootstrap_components._components.Collapse import Collapse
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -16,7 +15,8 @@ import base64
 
 from infrastructure.db._base import DB
 from handlers.get import get_service
-
+# def get_service():
+#     return 'ПУТИН'
 
 db = DB.factory('json', config={})
 
@@ -46,16 +46,20 @@ navbar = dbc.NavbarSimple(
 def make_news(news, num):
     return dbc.Card(
         [
-            dbc.CardHeader(
-                dbc.Button(
+            dbc.CardHeader(children=[
+                html.H4(
                     news['headline'],
-                    n_clicks=0,
-                    color="link",
-                    style={'textAlign': 'left'})
+                    title=news['body'],
+                    
+                    
+                    style={'textAlign': 'left'}),
+                ]
             ),
-        ]
+            # dbc.Tooltip(children=news['body'], target='b'+str(news['id']), placement='bottom')
+        ],
+        id='b'+str(news['id']),
+        className='mb-3'
     )
-    pass
 
 
 def make_cluster(cluster, num):
@@ -65,21 +69,35 @@ def make_cluster(cluster, num):
             [
                     make_news(cluster['news'][i], i) for i in range(len(cluster['news']))
                     ]
-        )])
+        )], className="mb-3")
 
 
 index_page = html.Div([
     navbar,
     dbc.Container(children=[
-        html.H1('Страница с новостями - карточки новостей, объединенныe по темам'),
-        html.Div('Здесь расположены карточки со статьями'),
-        html.Div('Сортировка карточек от новой к старой'),
-        html.Div('в карточке открыта новейшая и закрыты старые статьи'),
-        html.Div('Заголовок карточки - тематика'),
+        html.H1('Темы новостей'),
+        # html.Div('Здесь расположены карточки со статьями'),
+        # html.Div('Сортировка карточек от новой к старой'),
+        # html.Div('в карточке открыта новейшая и закрыты старые статьи'),
+        # html.Div('Заголовок карточки - тематика'),
+        dbc.Button('обновить', id='reload-button', className="mb-3"),
+        # dcc.Store(id='clusters'),
+        html.Div(dbc.Spinner(color="primary"), id="cluster-cards")
 
-
-    ]+[make_cluster(data[i], i) for i in range(100)])
+    ])
 ])
+
+
+@app.callback(
+
+    Output('cluster-cards', 'children'),
+    Input('reload-button', 'n_clicks')
+    
+)
+def reload(n):
+
+    data = db.get_many(0, db.get_size())
+    return [make_cluster(data[i], i) for i in range(len(data))[::-1]]
 
 
 adminPanel = html.Div([
@@ -151,7 +169,7 @@ def upload_file(content, filename):
               Output('article-title', 'data'),
               Input('page-1-dropdown', 'value'),
               State('news-json', 'data'))
-def page_1_dropdown(value, article):
+def dropdown(value, article):
     if not article:
         return "Сначала загрузите данные", None
 
@@ -162,7 +180,8 @@ def page_1_dropdown(value, article):
         ).header
         return ['Выбранная модель: "{}"'.format(value),
                 html.H2(title),
-                dbc.Button('сохранить результат в базу', id='save-button', n_clicks=0)
+                dbc.Button('сохранить результат в базу',
+                           id='save-button', n_clicks=0)
                 ], title
     else:
         header_generator_service = get_service('random_header')
@@ -171,7 +190,8 @@ def page_1_dropdown(value, article):
         ).header
         return ['модель не выбрана',
                 html.H2(title),
-                dbc.Button('сохранить результат в базу', id='save-button', n_clicks=0)
+                dbc.Button('сохранить результат в базу',
+                           id='save-button', n_clicks=0)
                 ], title
 
 
