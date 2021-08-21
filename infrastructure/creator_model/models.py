@@ -1,6 +1,7 @@
 import re
 from typing import List, Tuple
 from collections import Counter
+import pickle
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -32,9 +33,14 @@ class NgrammModel(BaseModel):
 
 class TfidfModel(BaseModel):
 
-    def __init__(self, ngram_range=(3, 4), max_features=10000):
+    def __init__(self, encoder_path: str, ngram_range=(3, 4), max_features=10000):
+        self.encoder_path = encoder_path
         self.tfidf = TfidfVectorizer(ngram_range=(3, 4), max_features=100000).fit(None)
         pass
+
+    def load_model(self):
+        model = pickle.load(open(self.encoder_path, 'wb'))
+        return model
 
     def inference_model(self, model_input=List[str]):
         generated_headers = self.tfidf_generate(model_input)
