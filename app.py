@@ -12,11 +12,11 @@ from datetime import datetime
 import base64
 
 from infrastructure.db._base import DB
-# from handlers.get import get_service
+from handlers.get import get_service
 
 
-def get_service():
-    return 'ПУТИН'
+# def get_service():
+#     return 'ПУТИН'
 
 print("Ipmports complete")
 
@@ -46,7 +46,8 @@ navbar = dbc.NavbarSimple(
 
 
 def make_news(news, num):
-    date = datetime.strptime(news['published_at'][:-6],'%Y-%m-%d %H:%M:%S.%f')
+    if 'published_at' in news:
+        date = datetime.strptime(news['published_at'][:-6],'%Y-%m-%d %H:%M:%S.%f')
     return dbc.Card(
         [
             dbc.CardHeader(children=[
@@ -56,7 +57,7 @@ def make_news(news, num):
                     style={'textAlign': 'left'}),
             ]
             ),
-            dbc.CardFooter(children=[str(date.date()), str(date.time())])
+            dbc.CardFooter(children=[str(date.date()), str(date.time())]) if 'published_at' in news else None
             # dbc.Tooltip(children=news['body'], target='b'+str(news['id']), placement='bottom')
             #"published_at": "2021-03-29 07:55:26.530522+00:00",
         ],
