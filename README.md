@@ -7,7 +7,7 @@
 ### Подготовка
 Для Запуска на cpu:
 - Необходимо загрузить и разархивировать модели в папку `model_files/`
-- сделфть pull подготовленного image из DockerHub
+- сделать pull подготовленного image из DockerHub
 
 ## Команды для запуска проекта:
 Загрузите модели командой:
@@ -18,3 +18,8 @@
 
 Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт и запустим наш image
 ```docker run -v $PWDleadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
+
+## Вы можете попробовать нашу модель в Colab!
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/11_pCGa3fbgoGIKCq2LfzBOWiE4BfcRHX?usp=sharing)
+
