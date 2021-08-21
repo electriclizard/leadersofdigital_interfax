@@ -44,15 +44,16 @@ navbar = dbc.NavbarSimple(
 def make_news(news, num):
     if 'published_at' in news:
 
-        date = datetime.strptime(news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
+        date = datetime.strptime(
+            news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
     return dbc.Card(
         [
-                html.P([
-                    html.Time("• " + date.strftime("%Y-%m-%d %H:%M") + " " if 'published_at' in news else None,
-                    style={'color': 'grey', 'font-size': 'smaller'}),
-                          (news['headline'] or '')
-    ]
-                ),
+            html.P([
+                html.Time("• " + date.strftime("%Y-%m-%d %H:%M") + " " if 'published_at' in news else None,
+                          style={'color': 'grey', 'font-size': 'smaller'}),
+                (news['headline'] or '')
+            ]
+            ),
         ], style={'border': '0px'}
 
     )
@@ -68,8 +69,8 @@ def make_cluster(cluster, num):
         ),
         dbc.CardBody(
             [
-                    make_news(cluster['news'][i], i) for i in range(len(cluster['news']))
-                    ]
+                make_news(cluster['news'][i], i) for i in range(len(cluster['news']))
+            ]
         )], style={'margin': '20px', 'border-radius': '20px'})
 
 
@@ -77,18 +78,21 @@ index_page = html.Div([
     navbar,
     dbc.Container(children=[
         dbc.Row([
-        html.H1('Темы новостей', style={'margin': '10px'}),
-        # html.Div('Здесь расположены карточки со статьями'),
-        # html.Div('Сортировка карточек от новой к старой'),
-        # html.Div('в карточке открыта новейшая и закрыты старые статьи'),
-        # html.Div('Заголовок карточки - тематика'),
-        dbc.Button('обновить', id='reload-button', className="mb-3", style={'margin': '10px'}),
-            ]),
+            html.H1('Темы новостей', style={'margin': '10px'}),
+            # html.Div('Здесь расположены карточки со статьями'),
+            # html.Div('Сортировка карточек от новой к старой'),
+            # html.Div('в карточке открыта новейшая и закрыты старые статьи'),
+            # html.Div('Заголовок карточки - тематика'),
+            dbc.Button('обновить', id='reload-button',
+                       className="mb-3", style={'margin': '10px'}),
+        ]),
         # dcc.Store(id='clusters'),
-        html.Div(dbc.Spinner(color="primary"), id="cluster-cards", style={'align': 'center'})
+        html.Div(dbc.Spinner(color="primary"),
+                 id="cluster-cards", style={'align': 'center'})
 
     ])
 ])
+
 
 @app.callback(
 
@@ -135,15 +139,16 @@ adminPanel = html.Div([
                 'label': 'Статистический генератор', 'value': 'ngram_header'}],
             placeholder="Выберите модель"
         ),
-        html.Div(id='page-1-content'),
+        html.Div(),
+        dbc.Spinner(color="primary", id='page-1-content',),
         dcc.Store(id='news-json'),
         dcc.Store(id='article-title'),
         html.Div(id="is_saved")
-
-
     ])
-
 ])
+
+
+
 
 def validateJSON(jsondata):
     if 'title' in jsondata[0]:
@@ -151,6 +156,7 @@ def validateJSON(jsondata):
     if 'body' in jsondata[0]:
         return 'single'
     return None
+
 
 @app.callback(
     Output('output-data-upload', 'children'),
@@ -173,11 +179,11 @@ def upload_file(content, filename):
             if JSONtype == None:
                 return ['Формат JSON не соответствует требуемому. Если хотите загрузить одну тему, обязательно наличие "body" в элементах списка. Если необходимо обработать несколько тем, необходимо наличие "title" в элементах'], None
 
-            if JSONtype =='single':
+            if JSONtype == 'single':
                 return [make_news(article[i], i) for i in range(len(article))], article
-            
-            if JSONtype =='multiple':
-                return [ html.H3('Вы загрузили '+str(len(article))+' тем, обработка займет больше времени')]+[make_cluster(article[i], i) for i in range(len(article))], article
+
+            if JSONtype == 'multiple':
+                return [html.H3('Вы загрузили '+str(len(article))+' тем, обработка займет больше времени')]+[make_cluster(article[i], i) for i in range(len(article))], article
         else:
             return "Загрузите файл формата json", None
     else:
@@ -194,8 +200,6 @@ def dropdown(value, article):
 
     JSONType = validateJSON(article)
 
-
-
     if value:
 
         if JSONType == 'single':
@@ -203,29 +207,28 @@ def dropdown(value, article):
             title = header_generator_service.create_cluster_header(
                 article
             ).header
-            
+
             return ['Выбранная модель: "{}"'.format(value)]+[
                 html.H2(i) for i in title]+[
                 dbc.Button('сохранить результат в базу',
-                        id='save-button', n_clicks=0)], title
+                           id='save-button', n_clicks=0)], title
         if JSONType == 'multiple':
             title = []
             for i in range(len(article)):
-                finaldict={}
+                finaldict = {}
                 news = article[i]['news']
                 header_generator_service = get_service(value)
                 result = header_generator_service.create_cluster_header(
                     news
                 ).header
-                finaldict[article[i]['title']]= result
+                finaldict[article[i]['title']] = result
                 title.append(finaldict)
-            
 
             return['Выбранная модель: "{}"'.format(value), html.Br()]+[
                 str(objTitle) for objTitle in title
             ]+[
                 dbc.Button('сохранить результат в базу',
-                        id='save-button', n_clicks=0)], title
+                           id='save-button', n_clicks=0)], title
     else:
         return ['модель не выбрана'], None
 
