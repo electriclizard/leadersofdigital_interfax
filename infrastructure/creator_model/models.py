@@ -74,8 +74,12 @@ class BertModel(BaseModel):
 
     def inference_model(self, model_input: List[str]):
         news = self.preprocess_inputs(model_input)
-        out = self.model.generate(input_ids=news, decoder_start_token_id=101)[0]
-        output = self.tokenizer.decode(out)
+        out = self.model.generate(
+            input_ids=news,
+            decoder_start_token_id=101, num_beams=5, num_return_sequences=5)[0]
+        output = self.tokenizer.decode(out, skip_special_tokens=True)
+
+        return [output]
 
     def preprocess_inputs(self, texts: List[str]) -> torch.Tensor:
         news_batch = ' '.join([' '.join([s.text for s in list(razdel.sentenize(n))[2:4]]) for n in texts])

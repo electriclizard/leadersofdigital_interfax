@@ -107,7 +107,7 @@ adminPanel = html.Div([
         dcc.Dropdown(
             id='page-1-dropdown',
             options=[{'label': i, 'value': i} for i in [
-                'ngram_header', 'dummy_header', ]],
+                'bert_header', 'ngram_header', 'dummy_header', ]],
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
