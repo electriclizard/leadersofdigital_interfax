@@ -23,15 +23,22 @@ Python >= 3.6
 ```docker pull electriclizard/leadersofdigital:latest```
 
 Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт и запустим наш image
-```docker run -v $PWD/leadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
+```docker run -v ${PWD}/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
 
-Для запуска без Docker
+#### Для запуска без Docker
 
 - активируйте virtualenv
 
 - установите все зависимости `pip install -r requirements.txt`
 
 - запустите сервис ```python app.py```
+
+#### Для запуска с Docker на GPU необходимо:
+- установленный nvidia docker
+- установленный nvidia-driver
+- заменить в `configs/models.py` в классе `BertConfig` значение в строке 7 на `device: str = 'cuda'`
+- тогда команда запуска контейнера будет вглядеть так: 
+`docker run --gpus all -v ${PWD}/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital`
 
 ## Вы можете попробовать нашу модель в Colab!
 
