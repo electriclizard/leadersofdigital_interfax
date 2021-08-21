@@ -8,6 +8,11 @@ Python >= 3.6
 ### Подготовка
 Для Запуска на cpu:
 - Необходимо загрузить и разархивировать модели в папку `model_files/`
+- Для этого нужно создать virtualenv с python3 и установить библиотеку gdown
+
+- `python3 -m venv venv/`
+- `source venv/bin/activate`
+- `pip install gdown`
 - сделать pull подготовленного image из DockerHub
 
 ## Команды для запуска проекта с помощью Docker:
