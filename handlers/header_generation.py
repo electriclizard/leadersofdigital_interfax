@@ -8,7 +8,7 @@ def create_header_service():
 
 
 handlers = {
-    "recognize_picture": create_header_service()
+    "random_header": create_header_service()
 }
 
 
