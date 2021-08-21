@@ -14,10 +14,6 @@ import base64
 from infrastructure.db._base import DB
 from handlers.get import get_service
 
-
-# def get_service():
-#     return 'ПУТИН'
-
 print("Ipmports complete")
 
 db = DB.factory('json', config={})
@@ -30,8 +26,8 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True,
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+    html.Div(id='page-content'),
+], style={'backgroundColor': 'white'})
 
 
 navbar = dbc.NavbarSimple(
@@ -39,33 +35,28 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Admin", href="/admin")),
 
     ],
-    brand="Home",
+    brand="Newsfeed",
     brand_href="/",
-    color="primary",
+    color="#008080",
     dark=True,)
 
 
 def make_news(news, num):
     if 'published_at' in news:
-        date = datetime.strptime(
-            news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
+
+        date = datetime.strptime(news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
     return dbc.Card(
         [
-            dbc.CardHeader(children=[
-                html.H4(
-                    news['headline'],
-                    title=news['body'],
-                    style={'textAlign': 'left'}),
-            ]
-            ),
-            dbc.CardFooter(children=[str(date.date()), str(
-                date.time())]) if 'published_at' in news else None
-            # dbc.Tooltip(children=news['body'], target='b'+str(news['id']), placement='bottom')
-            # "published_at": "2021-03-29 07:55:26.530522+00:00",
-        ],
-        id='b'+str(news['id']),
-        className='mb-3'
+                html.P([
+                    html.Time("• " + date.strftime("%Y-%m-%d %H:%M") + " " if 'published_at' in news else None,
+                    style={'color': 'grey', 'font-size': 'smaller'}),
+                          (news['headline'] or '')
+    ]
+                ),
+        ], style={'border': '0px'}
+
     )
+    pass
 
 
 def make_cluster(cluster, num):
@@ -77,26 +68,27 @@ def make_cluster(cluster, num):
         ),
         dbc.CardBody(
             [
-                make_news(cluster['news'][i], i) for i in range(len(cluster['news']))
-            ]
-        )], className="mb-3")
+                    make_news(cluster['news'][i], i) for i in range(len(cluster['news']))
+                    ]
+        )], style={'margin': '20px', 'border-radius': '20px'})
 
 
 index_page = html.Div([
     navbar,
     dbc.Container(children=[
-        html.H1('Темы новостей'),
+        dbc.Row([
+        html.H1('Темы новостей', style={'margin': '10px'}),
         # html.Div('Здесь расположены карточки со статьями'),
         # html.Div('Сортировка карточек от новой к старой'),
         # html.Div('в карточке открыта новейшая и закрыты старые статьи'),
         # html.Div('Заголовок карточки - тематика'),
-        dbc.Button('обновить', id='reload-button', className="mb-3"),
+        dbc.Button('обновить', id='reload-button', className="mb-3", style={'margin': '10px'}),
+            ]),
         # dcc.Store(id='clusters'),
-        html.Div(dbc.Spinner(color="primary"), id="cluster-cards")
+        html.Div(dbc.Spinner(color="primary"), id="cluster-cards", style={'align': 'center'})
 
     ])
 ])
-
 
 @app.callback(
 
