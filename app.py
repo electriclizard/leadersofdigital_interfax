@@ -47,7 +47,8 @@ navbar = dbc.NavbarSimple(
 
 def make_news(news, num):
     if 'published_at' in news:
-        date = datetime.strptime(news['published_at'][:-6],'%Y-%m-%d %H:%M:%S.%f')
+        date = datetime.strptime(
+            news['published_at'][:-6], '%Y-%m-%d %H:%M:%S.%f')
     return dbc.Card(
         [
             dbc.CardHeader(children=[
@@ -57,9 +58,10 @@ def make_news(news, num):
                     style={'textAlign': 'left'}),
             ]
             ),
-            dbc.CardFooter(children=[str(date.date()), str(date.time())]) if 'published_at' in news else None
+            dbc.CardFooter(children=[str(date.date()), str(
+                date.time())]) if 'published_at' in news else None
             # dbc.Tooltip(children=news['body'], target='b'+str(news['id']), placement='bottom')
-            #"published_at": "2021-03-29 07:55:26.530522+00:00",
+            # "published_at": "2021-03-29 07:55:26.530522+00:00",
         ],
         id='b'+str(news['id']),
         className='mb-3'
@@ -135,8 +137,10 @@ adminPanel = html.Div([
         html.Div(id='output-data-upload'),
         dcc.Dropdown(
             id='page-1-dropdown',
-            options=[{'label': i, 'value': i} for i in [
-                'bert_header', 'ngram_header', 'dummy_header', ]],
+            # options=[{'label': i, 'value': i} for i in [
+            #     'bert_header', 'ngram_header', 'dummy_header', ]],
+            options=[{'label': 'Нейросетевой генератор bert', 'value': 'bert_header'}, {
+                'label': 'Статистический генератор', 'value': 'ngram_header'}],
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
@@ -186,21 +190,17 @@ def dropdown(value, article):
         title = header_generator_service.create_cluster_header(
             article
         ).header
-        return ['Выбранная модель: "{}"'.format(value),
-                html.H2(title),
-                dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)
-                ], title
+        return ['Выбранная модель: "{}"'.format(value)]+[
+            html.H2(i) for i in title]+[
+            dbc.Button('сохранить результат в базу',
+                       id='save-button', n_clicks=0)
+        ], title
     else:
         header_generator_service = get_service('random_header')
         title = header_generator_service.create_cluster_header(
             article
         ).header
-        return ['модель не выбрана',
-                html.H2(title),
-                dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)
-                ], title
+        return ['модель не выбрана'], title
 
 
 @app.callback(
@@ -227,6 +227,7 @@ def display_page(pathname):
     else:
         return index_page
     # You could also return a 404 "URL not found" page here
+
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0')
