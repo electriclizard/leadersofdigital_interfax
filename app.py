@@ -4,19 +4,16 @@
 from typing import Container
 import dash
 from dash.dependencies import Output, State, Input
-from dash_bootstrap_components._components.Collapse import Collapse
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-from dash_html_components.Tr import Tr
-import pandas as pd
 import json
-import re
 import base64
 
 from infrastructure.db._base import DB
 from handlers.get import get_service
 
+print("Ipmports complete")
 
 db = DB.factory('json', config={})
 
@@ -110,7 +107,7 @@ adminPanel = html.Div([
         dcc.Dropdown(
             id='page-1-dropdown',
             options=[{'label': i, 'value': i} for i in [
-                'tf_idf_header', 'ngram_header', 'dummy_header', ]],
+                'ngram_header', 'dummy_header', ]],
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
@@ -200,6 +197,5 @@ def display_page(pathname):
         return index_page
     # You could also return a 404 "URL not found" page here
 
-
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0')

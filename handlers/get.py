@@ -6,7 +6,7 @@ from handlers.header_generation import create_tfidf_service
 handlers = {
     "dummy_header": create_dummy_header_service(),
     "ngram_header": create_ngram_service(),
-    "tf_idf_header": create_tfidf_service()
+    # "tf_idf_header": create_tfidf_service()
 }
 
 
