@@ -1,12 +1,13 @@
 from handlers.header_generation import create_dummy_header_service
 from handlers.header_generation import create_ngram_service
-from handlers.header_generation import create_tfidf_service
+from handlers.header_generation import create_bert_service
 
 
 handlers = {
     "dummy_header": create_dummy_header_service(),
     "ngram_header": create_ngram_service(),
-    "tf_idf_header": create_tfidf_service()
+    "bert_header": create_bert_service()
+    # "tf_idf_header": create_tfidf_service()
 }
 
 
