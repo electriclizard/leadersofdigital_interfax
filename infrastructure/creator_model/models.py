@@ -35,11 +35,11 @@ class TfidfModel(BaseModel):
 
     def __init__(self, encoder_path: str, ngram_range=(3, 4), max_features=10000):
         self.encoder_path = encoder_path
-        self.tfidf = TfidfVectorizer(ngram_range=(3, 4), max_features=100000).fit(None)
-        pass
+        self.tfidf_encoder = self.load_model()
+        
 
     def load_model(self):
-        model = pickle.load(open(self.encoder_path, 'wb'))
+        model = pickle.load(open(self.encoder_path, 'rb'))
         return model
 
     def inference_model(self, model_input=List[str]):
@@ -47,8 +47,8 @@ class TfidfModel(BaseModel):
         return generated_headers
 
     def tfidf_generate(self, news: List[str]) -> List:
-        indexes = (-self.tfidf.transform(news).sum(axis=0)).argsort()[0, :20].tolist()[0]
+        indexes = (-self.tfidf_encoder.transform(news).sum(axis=0)).argsort()[0, :20].tolist()[0]
         res = []
         for i in indexes:
-            res.append(self.tfidf.get_feature_names()[i])
+            res.append(self.tfidf_encoder.get_feature_names()[i])
         return res
