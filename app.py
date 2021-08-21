@@ -114,6 +114,10 @@ adminPanel = html.Div([
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
+        dcc.Store(id='news-json'),
+        dcc.Store(id='article-title'),
+        html.Div(id="is_saved")
+
 
     ])
 
@@ -122,8 +126,9 @@ adminPanel = html.Div([
 
 @app.callback(
     Output('output-data-upload', 'children'),
+    Output('news-json', 'data'),
     Input('upload_file', 'contents'),
-    State('upload_file', 'filename')
+    State('upload_file', 'filename'),
 )
 def upload_file(content, filename):
     if filename:
@@ -135,45 +140,59 @@ def upload_file(content, filename):
             article = json.loads(text)
 
             # return [news['body']+'\n' for news in article]
-            return [make_news(article[i], i) for i in range(len(article))]
+            return [make_news(article[i], i) for i in range(len(article))], article
         else:
-            return "Загрузите файл формата json"
+            return "Загрузите файл формата json", None
     else:
-        return "загрузите тестовый файл с кластером новостей"
+        return "загрузите тестовый файл с кластером новостей", None
 
 
 @app.callback(Output('page-1-content', 'children'),
+              Output('article-title', 'data'),
               Input('page-1-dropdown', 'value'),
-              State('upload_file', 'contents'))
-def page_1_dropdown(value, content):
-    if not content:
-        return "Сначала загрузите данные"
-
-    content_type, content_string = content.split(',')
-    decoded = base64.b64decode(content_string)
-    text = decoded.decode('utf-8')
-    article = json.loads(text)
+              State('news-json', 'data'))
+def page_1_dropdown(value, article):
+    if not article:
+        return "Сначала загрузите данные", None
 
     if value:
         header_generator_service = get_service(value)
+        title = header_generator_service.create_cluster_header(
+            article
+        ).header
         return ['Выбранная модель: "{}"'.format(value),
-                html.H2(header_generator_service.create_cluster_header(
-                    article
-                ).header),
-                dbc.Button('сохранить в базу?')
-                ]
+                html.H2(title),
+                dbc.Button('сохранить результат в базу', id='save-button', n_clicks=0)
+                ], title
     else:
         header_generator_service = get_service('random_header')
+        title = header_generator_service.create_cluster_header(
+            article
+        ).header
         return ['модель не выбрана',
-                html.H2(header_generator_service.create_cluster_header(
-                    article
-                ).header),
-                ]
+                html.H2(title),
+                dbc.Button('сохранить результат в базу', id='save-button', n_clicks=0)
+                ], title
 
 
-# Update the index
-@app.callback(dash.dependencies.Output('page-content', 'children'),
-              [dash.dependencies.Input('url', 'pathname')])
+@app.callback(
+    Output('is_saved', 'children'),
+    [Input('save-button', 'n_clicks')],
+    State('news-json', 'data'),
+    State('article-title', 'data'),
+)
+def save_to_db(click, cluster, title):
+    print(click, cluster, title)
+    if click:
+        db.insert_one({'title': title, 'news': cluster})
+        print(click, cluster, title)
+        return "Сохранено!"
+    else:
+        return None
+
+
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/admin':
         return adminPanel
