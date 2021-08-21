@@ -2,18 +2,19 @@
 
 
 ## Требования:
-Docker
+Установленный Docker
 
 ### Подготовка
-Необходимо загрузить и разархивировать модели в папку `model_files/`
+Для Запуска на cpu:
+- Необходимо загрузить и разархивировать модели в папку `model_files/`
+- сделфть pull подготовленного image из DockerHub
 
 ## Команды для запуска проекта:
-Для этого выполните команду
+Загрузите модели командой:
 ```sh load_models.sh```
 
-Далее соберем образ и установим все зависимоти
-```docker build . -t interfax```
+Стянем образ
+```docker pull electriclizard/leadersofdigital:latest```
 
-Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт
-
-```docker run -v /Users/cheena/PycharmProjects/leadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 interfax```
+Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт и запустим наш image
+```docker run -v $PWDleadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
