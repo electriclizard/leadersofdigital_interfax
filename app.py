@@ -52,12 +52,12 @@ def make_news(news, num):
                 html.Time("• " + date.strftime("%Y-%m-%d %H:%M") + " " if 'published_at' in news else None,
                           style={'color': 'grey', 'font-size': 'smaller'}),
                 (news['headline'] or '')
-            ]
+            ], id = 'd'+str(news['id'])
             ),
+            dbc.Tooltip(news['body'],target='d'+str(news['id']))
         ], style={'border': '0px'}
 
     )
-    pass
 
 
 def make_cluster(cluster, num):
@@ -148,8 +148,6 @@ adminPanel = html.Div([
 ])
 
 
-
-
 def validateJSON(jsondata):
     if 'title' in jsondata[0]:
         return 'multiple'
@@ -190,8 +188,22 @@ def upload_file(content, filename):
         return "загрузите тестовый файл с кластером новостей", None
 
 
+def create_choice(title):
+    return dbc.RadioItems(
+        options=[{'label': i, 'value': i} for i in title],
+        value='choose',
+        id='choice'
+    )
+    # return [html.H2(i) for i in title]
+
+
+@app.callback(Output('article-title', 'data'), Input('choice', 'value'))
+def changeTitle(value):
+    return value
+
+
 @app.callback(Output('page-1-content', 'children'),
-              Output('article-title', 'data'),
+
               Input('page-1-dropdown', 'value'),
               State('news-json', 'data'))
 def dropdown(value, article):
@@ -208,10 +220,10 @@ def dropdown(value, article):
                 article
             ).header
 
-            return ['Выбранная модель: "{}"'.format(value)]+[
-                html.H2(i) for i in title]+[
-                dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)], title
+            return ['Выбранная модель: "{}"'.format(value), create_choice(title),
+                    dbc.Button('сохранить результат в базу',
+                               id='save-button', n_clicks=0)]
+
         if JSONType == 'multiple':
             title = []
             for i in range(len(article)):
@@ -224,13 +236,26 @@ def dropdown(value, article):
                 finaldict[article[i]['title']] = result
                 title.append(finaldict)
 
-            return['Выбранная модель: "{}"'.format(value), html.Br()]+[
-                str(objTitle) for objTitle in title
-            ]+[
-                dbc.Button('сохранить результат в базу',
-                           id='save-button', n_clicks=0)], title
+            return['Выбранная модель: "{}"'.format(value), html.Br(), generate_table(title)]
     else:
-        return ['модель не выбрана'], None
+        return ['модель не выбрана']
+
+
+def gen_row(dct):
+    print(dct)
+    return [html.Td(list(dct.keys())[0]), html.Td(list(dct.values())[0][0])]
+
+
+def generate_table(data):
+
+    return dbc.Table([
+        html.Thead([html.Th('Ground Truth'), html.Th(
+            'Сгенерированный заголовок')]),
+        html.Tbody(
+            [html.Tr(gen_row(dct)) for dct in data]
+        )
+    ]
+    )
 
 
 @app.callback(
@@ -240,18 +265,18 @@ def dropdown(value, article):
     State('article-title', 'data'),
 )
 def save_to_db(click, cluster, title):
-    if click & len(title) == 1:
+    if (click) & (validateJSON(cluster) == 'single'):
         db.insert_one({'generated_title': title, 'news': cluster})
         return "Сохранено!"
 
-    if click & len(title) > 1:
-        result = []
-        for k in range(len(cluster)):
-            news = cluster[k]
-            news['generated_title'] = title[k][news['title']][0]
-            result.append(news)
-        db.insert_many(result)
-        return "Сохранено все!"
+    # if click & len(title) > 1:
+    #     result = []
+    #     for k in range(len(cluster)):
+    #         news = cluster[k]
+    #         news['generated_title'] = title[k][news['title']][0]
+    #         result.append(news)
+    #     db.insert_many(result)
+    #     return "Сохранено все!"
     else:
         return None
 
