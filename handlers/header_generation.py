@@ -26,3 +26,17 @@ def create_tfidf_service():
     )
     header_service = InterfaxHeaderCreator(header_model)
     return header_service
+
+
+def create_bert_service():
+    from infrastructure.creator_model.models import BertModel
+    from configs.models import BertConfig
+
+    header_model = BertModel(
+        max_len=BertConfig.max_len,
+        device=BertConfig.device,
+        tokenizer_name=BertConfig.tokenizer_name,
+        model_path=BertConfig.model_path
+    )
+    header_service = InterfaxHeaderCreator(header_model)
+    return header_service
