@@ -10,6 +10,7 @@ class DataBase(ABC):
         """
         pass
 
+    @abstractmethod
     def _make_connection(self):
         """
 
@@ -18,7 +19,7 @@ class DataBase(ABC):
         pass
 
     @abstractmethod
-    def write_entity(self):
+    def write_entity(self, entity):
         """
         Save smth to db
         :return:

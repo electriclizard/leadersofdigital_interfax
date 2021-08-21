@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from infrastructure.creator_model.abstract import BaseModel
+
 from service.data_models import NewsClusterData
 from service.data_models import InputNews
 from service.data_models import GeneratedHeader
@@ -14,8 +16,8 @@ class HeaderCreator(ABC):
 
 class InterfaxHeaderCreator(HeaderCreator):
 
-    def __init__(self):
-        pass
+    def __init__(self, header_model: BaseModel):
+        self.header_model = header_model
 
     def create_cluster_header(self, input_news: NewsClusterData) -> GeneratedHeader:
         """
@@ -23,7 +25,9 @@ class InterfaxHeaderCreator(HeaderCreator):
         :param input_news:
         :return:
         """
-        pass
+        created_header = self.header_model.inference_model()
+        header = self._serialize_output(created_header)
+        return header
 
     def _parse_input(self, some_input):
         """
@@ -39,3 +43,8 @@ class InterfaxHeaderCreator(HeaderCreator):
         :return:
         """
         pass
+
+    @staticmethod
+    def _serialize_output(header_text: str) -> GeneratedHeader:
+        generated_header = GeneratedHeader(header=header_text)
+        return generated_header
