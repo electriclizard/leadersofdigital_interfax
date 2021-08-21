@@ -52,8 +52,9 @@ def make_news(news, num):
                 html.Time("• " + date.strftime("%Y-%m-%d %H:%M") + " " if 'published_at' in news else None,
                           style={'color': 'grey', 'font-size': 'smaller'}),
                 (news['headline'] or '')
-            ]
+            ], id = 'd'+str(news['id'])
             ),
+            dbc.Tooltip(news['body'],target='d'+str(news['id']))
         ], style={'border': '0px'}
 
     )
