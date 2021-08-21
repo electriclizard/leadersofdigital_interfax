@@ -229,7 +229,7 @@ def dropdown(value, article):
                 title.append(finaldict)
             
 
-            return['Выбранная модель: "{}"'.format(value)]+[
+            return['Выбранная модель: "{}"'.format(value), html.Br()]+[
                 str(objTitle) for objTitle in title
             ]+[
                 dbc.Button('сохранить результат в базу',
