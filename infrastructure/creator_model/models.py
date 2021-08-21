@@ -51,4 +51,6 @@ class TfidfModel(BaseModel):
         res = []
         for i in indexes:
             res.append(self.tfidf_encoder.get_feature_names()[i])
+        res = res if res != [] else [None]
+        print(res)
         return res
