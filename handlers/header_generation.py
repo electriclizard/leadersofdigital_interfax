@@ -8,7 +8,7 @@ def create_dummy_header_service():
     header_service = InterfaxHeaderCreator(header_model)
     return header_service
 
-
+  
 def create_ngram_service():
     from infrastructure.creator_model.models import NgrammModel
 
