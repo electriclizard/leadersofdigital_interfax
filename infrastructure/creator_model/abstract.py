@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 
 class BaseModel(ABC):
@@ -11,7 +12,7 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def inference_model(self, model_input=None):
+    def inference_model(self, model_input: List[str]):
         """
         Make a model nference
         :return:
