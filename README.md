@@ -17,7 +17,7 @@
 ```docker pull electriclizard/leadersofdigital:latest```
 
 Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт и запустим наш image
-```docker run -v $PWDleadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
+```docker run -v $PWD/leadersofdigital_interfax/model_files:/usr/src/app/model_files -p 8050:8050 electriclizard/leadersofdigital```
 
 ## Вы можете попробовать нашу модель в Colab!
 
