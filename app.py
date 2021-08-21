@@ -15,7 +15,7 @@ import re
 import base64
 
 from infrastructure.db._base import DB
-from handlers.header_generation import get_service
+from handlers.get import get_service
 
 
 db = DB.factory('json', config={})
@@ -110,7 +110,7 @@ adminPanel = html.Div([
         dcc.Dropdown(
             id='page-1-dropdown',
             options=[{'label': i, 'value': i} for i in [
-                'TF-IDF', 'Bert', 'ruGPT-3', 'ARTM', 'Ручные правила']],
+                'tf_idf_header', 'ngram_header', 'dummy_header', ]],
             placeholder="Выберите модель"
         ),
         html.Div(id='page-1-content'),
@@ -182,10 +182,10 @@ def page_1_dropdown(value, article):
     State('article-title', 'data'),
 )
 def save_to_db(click, cluster, title):
-    print(click, cluster, title)
+    # print(click, cluster, title)
     if click:
         db.insert_one({'title': title, 'news': cluster})
-        print(click, cluster, title)
+        # print(click, cluster, title)
         return "Сохранено!"
     else:
         return None
