@@ -12,7 +12,7 @@ Docker
 ```sh load_models.sh```
 
 Далее соберем образ и установим все зависимоти
-```docker build . interfax```
+```docker build . -t interfax```
 
 Загруженные модели мы передадим в контейнер с помощью Volumes, также прокинем нужный порт
 
