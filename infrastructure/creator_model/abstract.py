@@ -25,10 +25,8 @@ class DummyModel(BaseModel):
         pass
 
     def inference_model(self, model_input=None):
-        import random
         header_tokens = [
             'Россия', 'лучшая', 'страна', 'в мире',
             'Путен', 'наш', 'президент'
         ]
-        random_sequence = random.sample(header_tokens, 3)
-        return "".join(random_sequence)
+        return header_tokens
