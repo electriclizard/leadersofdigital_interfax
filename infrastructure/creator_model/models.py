@@ -71,6 +71,7 @@ class BertModel(BaseModel):
         self.tokenizer = BertTokenizerFast.from_pretrained(tokenizer_name)
         self.model = EncoderDecoderModel.from_pretrained(model_path)
         self.model.to(device)
+        self.model.eval()
 
     def inference_model(self, model_input: List[str]):
         news = self.preprocess_inputs(model_input)
