@@ -54,8 +54,8 @@ def make_news(news, num):
                 (news['headline'] or '')
             ], id='d'+str(news['id'])
             ),
-            dbc.Tooltip(news['body'], target='d' +
-                        str(news['id']), style={"width": "50vw", "maxWidth": "50vw"})
+            dbc.Tooltip(dbc.Card(dbc.CardBody(news['body'], style={'color':'black'})), target='d' +
+                        str(news['id']), style={"width": "50vw", "maxWidth": "50vw",'backgroundColor':'white'})
         ], style={'border': '0px'}
 
     )
